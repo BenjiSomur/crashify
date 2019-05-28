@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Crashify</string>
+    <string name="acceso_title">Introduce tus Credenciales para Ingresar</string>
+    <string name="acceso_username">Teléfono</string>
+    <string name="acceso_password">Contraseña</string>
+    <string name="acceso_sign_in_button">Entrar</string>
+    <string name="acceso_sign_up_hint">¿No tienes usuario?</string>
+    <string name="acceso_sign_up_button">Registrar</string>
+    <string name="acceso_progress_wait">Espera por favor...</string>
+    <string name="acceso_invalido">Datos incompletos</string>
+    <string name="acceso_desconocido">Usuario o contraseña incorrectos</string>
+    <string name="registrar_title">Introduce tus Datos</string>
+    <string name="registrar_name">Nombre</string>
+    <string name="registrar_phone">Teléfono</string>
+    <string name="registrar_password">Contraseña</string>
+    <string name="registrar_confirmar_password">Confirmar Contraseña</string>
+    <string name="registrar_sign_up_button">Registrar</string>
+    <string name="confirmar_title">Introduce el Código de Verificación que te llegó por SMS</string>
+    <string name="confirmar_code">Código</string>
+    <string name="title_activity_sign_up">SignUpActivity</string>
+</resources>
