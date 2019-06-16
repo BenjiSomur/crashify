@@ -12,8 +12,12 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.common.hash.Hashing;
+import com.level6ninja.crashify.beans.Respuesta;
+import com.level6ninja.crashify.beans.RespuestaValidacion;
 import com.level6ninja.crashify.ws.HttpUtils;
 
+
+import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
 
@@ -32,8 +36,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        txt_name = (EditText)findViewById(R.id.txt_username);
-        txt_password = (EditText)findViewById(R.id.txt_password);
+        txt_name = (EditText) findViewById(R.id.txt_username);
+        txt_password = (EditText) findViewById(R.id.txt_password);
     }
 
     private void showProgressDialog() {
@@ -49,64 +53,69 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public void entrarOnClick (View view) {
-    //    if (validar()) {
-    //        String username = txt_name.getText().toString();
-    //       String password = txt_password.getText().toString();
-    //       WSPOSTLoginTask task = new WSPOSTLoginTask();
-    //        String sha256hex = Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString();
-    //       task.execute(username, sha256hex);
-    //   } else {
-    //       Toast.makeText(this, getString(R.string.acceso_invalido), Toast.LENGTH_SHORT).show();
-    //   }
+    public void entrarOnClick(View view) {
+        if (validar()) {
+            String username = txt_name.getText().toString();
+            String password = txt_password.getText().toString();
+            WSPOSTLoginTask task = new WSPOSTLoginTask();
+            String sha256hex = Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString();
+            task.execute(username, sha256hex);
+        } else {
+            Toast.makeText(this, getString(R.string.acceso_invalido), Toast.LENGTH_SHORT).show();
+        }
     }
 
-    public void registrarOnClick (View view) {
+    public void registrarOnClick(View view) {
         Intent i = new Intent(this, SignUpActivity.class);
         startActivity(i);
     }
 
-    public boolean validar () {
+    public boolean validar() {
         return !txt_name.getText().toString().isEmpty() || !txt_password.getText().toString().isEmpty();
     }
 
-    //private void resultadoEntrar() {
-    //    System.out.println("Holis: " + json);
-    //    hideProgressDialog();
-    //   if (json!= null) {
-    //       RespuestaUsuario res = new Gson().fromJson(json, RespuestaUsuario.class);
-    //       if (res.getRespuesta().isError()) {
-    //           Log.v("Error en WS", "Error: " + res.getRespuesta().getMensaje());
-    //           if (res.getRespuesta().getErrorcode() == 9) {
-    //               Toast.makeText(this, getString(R.string.acceso_desconocido), Toast.LENGTH_SHORT).show();
-    //           }
-    //       } else {
-    //           Intent i = new Intent(this, NotasActivity.class);
-    //           i.putExtra("idUsuario", res.getUsuario().getIdUsuario().toString());
-    //            startActivity(i);
-    //        }
-    //    }
-    //}
+    private void resultadoEntrar() {
+        System.out.println("Holis: " + json);
+        hideProgressDialog();
+        if (json != null) {
+            try{
+                Log.v("Objeto recibido",""+ json);
+                RespuestaValidacion res = new Gson().fromJson(json, RespuestaValidacion.class);
+                if (res.getError().isError()) {
+                    Log.v("Error en WS", "Error: " + res.getError().getMensaje());
+                    if (res.getError().getErrorcode() == 9) {
+                        Toast.makeText(this, getString(R.string.acceso_desconocido), Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(this, "Funcionó", Toast.LENGTH_SHORT).show();
+               /*Intent i = new Intent(this, NotasActivity.class);
+               i.putExtra("idUsuario", res.getUsuario().getIdUsuario().toString());
+                startActivity(i);*/
+                }
+            }catch(Exception ex){
+                ex.printStackTrace();
+            }
+        }
+    }
 
-    class WSPOSTLoginTask extends AsyncTask <String, String, String> {
+    class WSPOSTLoginTask extends AsyncTask<String, String, String> {
 
         @Override
-        protected void onPreExecute () {
+        protected void onPreExecute() {
             json = null;
             showProgressDialog();
         }
 
         @Override
-        protected String doInBackground (String ... params) {
-               return HttpUtils.login(params[0], params[1]);
+        protected String doInBackground(String... params) {
+            return HttpUtils.login(params[0], params[1]);
         }
 
         @Override
-        protected void onPostExecute (String result) {
+        protected void onPostExecute(String result) {
             super.onPostExecute(result);
             json = result;
-            System.out.println("Holis");
-        //    resultadoEntrar();
+            resultadoEntrar();
         }
     }
 }
