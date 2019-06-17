@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void onClickAgregarReporte(View v) {
-        Intent i = new Intent(this, ReporteActivity.class);
+        Intent i = new Intent(this, AgregarReporteActivity.class);
         i.putExtra("idUsuario", idUsuario);
         startActivity(i);
     }

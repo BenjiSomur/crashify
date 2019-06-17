@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:id="@+id/agregarLayout"
     tools:context=".AgregarReporteActivity">
 
     <Space
@@ -21,7 +22,7 @@
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="@string/registrar_title"
+            android:text="Crear Reporte"
             android:textSize="24sp" />
 
     </LinearLayout>
@@ -36,56 +37,12 @@
         android:layout_height="wrap_content">
 
         <EditText
-            android:id="@+id/txt_usernameregistrar"
+            android:id="@+id/txt_reporteDescripcion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="@string/registrar_name"
-            android:inputType="textPersonName" />
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <EditText
-            android:id="@+id/txt_telefonoregistrar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:hint="@string/registrar_phone"
-            android:inputType="phone" />
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:passwordToggleEnabled="true">
-
-        <EditText
-            android:id="@+id/txt_passwordregistrar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:hint="@string/registrar_password"
-            android:inputType="textPassword" />
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:passwordToggleEnabled="true">
-
-        <EditText
-            android:id="@+id/txt_passwordconfirmar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:hint="@string/registrar_confirmar_password"
-            android:inputType="textPassword" />
+            android:hint="Descripción"
+            android:inputType="text" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -93,22 +50,11 @@
         android:layout_height="wrap_content">
 
         <android.support.design.widget.TextInputEditText
-            android:id="@+id/txt_fechaNacimiento"
+            android:id="@+id/txt_reporteInvolucrados"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Fecha de Nacimiento" />
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/txt_licencia"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Número de Licencia"
-            android:inputType="number" />
+            android:hint="Placas de Involucrados (Separadas por ,)"
+            android:inputType="textMultiLine" />
     </android.support.design.widget.TextInputLayout>
 
     <Space
@@ -116,13 +62,37 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp" />
 
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Button" />
+        </LinearLayout>
+    </ScrollView>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp" />
+
     <Button
-        android:id="@+id/btn_signup"
+        android:id="@+id/btn_locate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorAccent"
-        android:text="@string/registrar_sign_up_button"
-        android:onClick="registrarUsuarioOnClick"
+        android:onClick="clickLocation"
+        android:text="Enviar Reporte"
         android:textColor="#FFFCFC"
         android:textSize="18sp" />
 

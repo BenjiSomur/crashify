@@ -663,4 +663,50 @@ public class HttpUtils {
 
         return res;
     }
+
+    public static String agregarReporte(String descripcion, String idConductor, String latitud,
+                                        String longitud, String placasVehiculos) {
+        HttpURLConnection c = null;
+        String res = null;
+        try {
+            URL u = new URL(URL_WS_CRASHIFY + "/reportes/nuevoReporte");
+            c = (HttpURLConnection) u.openConnection();
+            c.setRequestMethod("POST");
+            c.setDoOutput(true);
+            c.setConnectTimeout(CONNECT_TIMEOUT);
+            c.setReadTimeout(READ_TIMEOUT);
+
+            DataOutputStream wr = new DataOutputStream(
+                    c.getOutputStream());
+            String urlParameters = String.format("descripcion=%s&idConductor=%s&latitud=%s&longitud=%s&" +
+                    "placasVehiculos=%s" +
+                    descripcion, idConductor, latitud, longitud, placasVehiculos);
+            wr.writeBytes(urlParameters);
+            wr.flush();
+            wr.close();
+
+            Integer status = c.getResponseCode();
+            if (status == 200 || status == 201) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(c.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = br.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+                br.close();
+                res = sb.toString();
+            }
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+            res = (ex.getMessage());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            res = (ex.getMessage());
+        } finally {
+            if (c != null) {
+                c.disconnect();
+            }
+        }
+        return res;
+    }
 }
