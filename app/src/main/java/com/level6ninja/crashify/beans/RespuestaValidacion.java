@@ -1,6 +1,7 @@
 package com.level6ninja.crashify.beans;
 
 public class RespuestaValidacion {
+
     private Respuesta error;
     private Conductor conductor;
 
@@ -35,4 +36,5 @@ public class RespuestaValidacion {
     public void setConductor(Conductor conductor) {
         this.conductor = conductor;
     }
+
 }

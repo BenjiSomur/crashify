@@ -13,6 +13,7 @@ import android.telephony.SmsMessage;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import static android.Manifest.permission.READ_SMS;
 import static android.Manifest.permission.RECEIVE_SMS;
@@ -20,12 +21,18 @@ import static android.Manifest.permission.RECEIVE_SMS;
 public class ConfirmarActivity extends AppCompatActivity {
 
     public static final Integer PETICION_PERMISO_MENSAJE = 1;
+    private String telefono;
     private EditText txt_token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_confirmar);
+
+        Intent intent = getIntent();
+        this.telefono= intent.getStringExtra("telefono");
+
+        Toast.makeText(this, this.telefono, Toast.LENGTH_SHORT).show();
 
         txt_token = (EditText)findViewById(R.id.txt_token);
         iniciarBroadcast();

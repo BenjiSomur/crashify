@@ -71,7 +71,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public boolean validar() {
-        return !txt_name.getText().toString().isEmpty() || !txt_password.getText().toString().isEmpty();
+        return !txt_name.getText().toString().isEmpty() && !txt_password.getText().toString().isEmpty();
     }
 
     private void resultadoEntrar() {
@@ -83,18 +83,17 @@ public class LoginActivity extends AppCompatActivity {
                 RespuestaValidacion res = new Gson().fromJson(json, RespuestaValidacion.class);
                 if (res.getError().isError()) {
                     Log.v("Error en WS", "Error: " + res.getError().getMensaje());
-                    if (res.getError().getErrorcode() == 9) {
+                    if (res.getError().getErrorcode() == 3) {
                         Toast.makeText(this, getString(R.string.acceso_desconocido), Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     Toast.makeText(this, "Funcionó", Toast.LENGTH_SHORT).show();
-               /*Intent i = new Intent(this, NotasActivity.class);
-               i.putExtra("idUsuario", res.getUsuario().getIdUsuario().toString());
-                startActivity(i);*/
                 }
             }catch(Exception ex){
                 ex.printStackTrace();
             }
+        } else {
+            Toast.makeText(this, "Error de conexión", Toast.LENGTH_SHORT).show();
         }
     }
 

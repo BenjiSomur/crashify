@@ -1,6 +1,7 @@
 package com.level6ninja.crashify.beans;
 
 public class Respuesta {
+
     private boolean error;
     private Integer errorcode;
     private String mensaje;
@@ -50,4 +51,5 @@ public class Respuesta {
     public void setMensaje(String mensaje) {
         this.mensaje = mensaje;
     }
+
 }
