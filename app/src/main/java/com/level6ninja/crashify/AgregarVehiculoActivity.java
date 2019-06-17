@@ -50,6 +50,7 @@ public class AgregarVehiculoActivity extends AppCompatActivity {
         WSPOSTMarcasTask taskMarcas = new WSPOSTMarcasTask();
         taskMarcas.execute();
 
+        hideProgressDialog();
         WSPOSTAseguradorasTask taskAseguradoras = new WSPOSTAseguradorasTask();
         taskAseguradoras.execute();
     }
