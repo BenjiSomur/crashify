@@ -253,41 +253,44 @@ public class HttpUtils {
         return res;
     }
 
-    public static String getVehiculos() {
-        HttpURLConnection conn = null;
+    public static String getVehiculos(String idConductor) {
+        HttpURLConnection c = null;
         String res = null;
         try {
-            URL url = new URL(URL_WS_CRASHIFY + "/vehiculos/getVehiculos");
-            conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setDoOutput(true);
-            conn.setConnectTimeout(CONNECT_TIMEOUT);
-            conn.setReadTimeout(READ_TIMEOUT);
+            URL u = new URL(URL_WS_CRASHIFY + "/vehiculos/getVehiculos");
+            c = (HttpURLConnection) u.openConnection();
+            c.setRequestMethod("POST");
+            c.setDoOutput(true);
+            c.setConnectTimeout(CONNECT_TIMEOUT);
+            c.setReadTimeout(READ_TIMEOUT);
 
-            Integer status = conn.getResponseCode();
+            DataOutputStream wr = new DataOutputStream(
+                    c.getOutputStream());
+            String urlParameters = String.format("idConductor=%s", idConductor);
+            wr.writeBytes(urlParameters);
+            wr.flush();
+            wr.close();
+
+            Integer status = c.getResponseCode();
             if (status == 200 || status == 201) {
-                BufferedReader br = new BufferedReader(
-                        new InputStreamReader(
-                                conn.getInputStream()
-                        )
-                );
+                BufferedReader br = new BufferedReader(new InputStreamReader(c.getInputStream()));
                 StringBuilder sb = new StringBuilder();
                 String line;
-                while(
-                        (line=br.readLine())!=null
-                ){
-                    sb.append((line+"\n"));
+                while ((line = br.readLine()) != null) {
+                    sb.append(line + "\n");
                 }
                 br.close();
                 res = sb.toString();
             }
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
+            res = (ex.getMessage());
         } catch (IOException ex) {
             ex.printStackTrace();
-        }finally{
-            if(conn!=null){
-                conn.disconnect();
+            res = (ex.getMessage());
+        } finally {
+            if (c != null) {
+                c.disconnect();
             }
         }
         return res;

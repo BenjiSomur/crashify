@@ -45,9 +45,6 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
-
-
-        Toast.makeText(this, this.idUsuario.toString(), Toast.LENGTH_SHORT).show();
     }
 
     @Override

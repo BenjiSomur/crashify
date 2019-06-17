@@ -15,10 +15,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".AgregarVehiculoActivity"></activity>
+        <activity android:name=".AgregarReporteActivity" />
         <activity
             android:name=".VehiculosActivity"
             android:label="Mis Vehículos"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ReporteActivity"
             android:label="Nuevo Reporte"

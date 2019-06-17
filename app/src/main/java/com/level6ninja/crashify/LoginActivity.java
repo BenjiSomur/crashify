@@ -40,6 +40,14 @@ public class LoginActivity extends AppCompatActivity {
         txt_password = (EditText) findViewById(R.id.txt_password);
     }
 
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        if ( pd_wait!=null && pd_wait.isShowing() ){
+            pd_wait.cancel();
+        }
+    }
+
     private void showProgressDialog() {
         pd_wait = new ProgressDialog(this);
         pd_wait.setMessage(getString(R.string.acceso_progress_wait));
