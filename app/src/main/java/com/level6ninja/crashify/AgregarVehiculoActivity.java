@@ -23,7 +23,8 @@ import java.util.List;
 
 public class AgregarVehiculoActivity extends AppCompatActivity {
 
-    private String json;
+    private String jsonMarcas;
+    private String jsonAseguradoras;
     private Integer idUsuario;
     private ProgressDialog pd_wait;
 
@@ -33,7 +34,7 @@ public class AgregarVehiculoActivity extends AppCompatActivity {
 
     private Spinner spinnerAseguradoras;
     private List<Aseguradora> aseguradoras;
-    Type aseguradorasDisponibles = new TypeToken<ArrayList<Aseguradora>>(){}.getType();
+    Type aseguradorasType = new TypeToken<ArrayList<Aseguradora>>(){}.getType();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,13 +49,16 @@ public class AgregarVehiculoActivity extends AppCompatActivity {
 
         WSPOSTMarcasTask taskMarcas = new WSPOSTMarcasTask();
         taskMarcas.execute();
+
+        WSPOSTAseguradorasTask taskAseguradoras = new WSPOSTAseguradorasTask();
+        taskAseguradoras.execute();
     }
 
     class WSPOSTMarcasTask extends AsyncTask<String, String, String> {
 
         @Override
         protected void onPreExecute () {
-            json = null;
+            jsonMarcas = null;
             showProgressDialog();
         }
 
@@ -66,8 +70,29 @@ public class AgregarVehiculoActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute (String result) {
             super.onPostExecute(result);
-            json = result;
+            jsonMarcas = result;
             cargarMarcas();
+        }
+    }
+
+    class WSPOSTAseguradorasTask extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute () {
+            jsonAseguradoras = null;
+            showProgressDialog();
+        }
+
+        @Override
+        protected String doInBackground (String ... params) {
+            return HttpUtils.getAseguradoras();
+        }
+
+        @Override
+        protected void onPostExecute (String result) {
+            super.onPostExecute(result);
+            jsonAseguradoras = result;
+            cargarAseguradoras();
         }
     }
 
@@ -98,8 +123,8 @@ public class AgregarVehiculoActivity extends AppCompatActivity {
 
     public void cargarMarcas() {
         hideProgressDialog();
-        if (json!= null) {
-            marcas = new Gson().fromJson(json, marcasType);
+        if (jsonMarcas!= null) {
+            marcas = new Gson().fromJson(jsonMarcas, marcasType);
             if (marcas != null) {
                 List<String> listaMarcas = new ArrayList<String>();
                 for(Marca m : marcas){
@@ -107,6 +132,25 @@ public class AgregarVehiculoActivity extends AppCompatActivity {
                 }
                 ArrayAdapter adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, listaMarcas);
                 spinnerMarcas.setAdapter(adapter);
+            } else {
+                Toast.makeText(this, "No se encontraron marcas", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(this, "Error en la conexión", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void cargarAseguradoras() {
+        hideProgressDialog();
+        if (jsonAseguradoras!= null) {
+            aseguradoras = new Gson().fromJson(jsonAseguradoras, aseguradorasType);
+            if (aseguradoras != null) {
+                List<String> listaAseguradoras = new ArrayList<String>();
+                for(Aseguradora m : aseguradoras){
+                    listaAseguradoras.add(m.getNombre());
+                }
+                ArrayAdapter adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, listaAseguradoras);
+                spinnerAseguradoras.setAdapter(adapter);
             } else {
                 Toast.makeText(this, "No se encontraron marcas", Toast.LENGTH_SHORT).show();
             }
