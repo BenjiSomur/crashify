@@ -5,19 +5,28 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,22 +36,37 @@ import com.level6ninja.crashify.beans.Respuesta;
 import com.level6ninja.crashify.beans.RespuestaValidacion;
 import com.level6ninja.crashify.ws.HttpUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 
 public class AgregarReporteActivity extends AppCompatActivity {
 
+    public static final int REQUEST_CAPTURE = 1;
+    public static final int PICK_IMAGE = 100;
+    private Uri photoURI;
+
     private String json;
+    private Integer imageCount;
     private Integer idUsuario;
     LocationManager locManager;
     private ProgressDialog pd_wait;
 
     private Double latitud;
     private Double longitud;
+    private List<Bitmap> fotosArray = new ArrayList<Bitmap>();
 
     private EditText txt_descripcion;
     private EditText txt_involucrados;
+    private LinearLayout linearLayout1;
+    private Button btn_locate;
+    private Button btn_evidencia;
 
     private final LocationListener locationListener = new LocationListener() {
 
@@ -66,6 +90,10 @@ public class AgregarReporteActivity extends AppCompatActivity {
 
         this.txt_descripcion = (EditText)findViewById(R.id.txt_reporteDescripcion);
         this.txt_involucrados = (EditText)findViewById(R.id.txt_reporteInvolucrados);
+        this.linearLayout1 = (LinearLayout)findViewById(R.id.linearLayout1);
+        this.btn_locate = (Button)findViewById(R.id.btn_locate);
+        this.btn_evidencia = (Button)findViewById(R.id.btn_evidencia);
+        this.btn_locate.setEnabled(false);
 
         Intent intent = getIntent();
         this.idUsuario = intent.getIntExtra("idUsuario", 0);
@@ -182,6 +210,53 @@ public class AgregarReporteActivity extends AppCompatActivity {
         if (pd_wait.isShowing()) {
             pd_wait.hide();
         }
+    }
+
+    protected void onActivityResult(int requestCode,
+                                    int resultCode, Intent data) {
+
+        //-------------- Desde camara -------------------------//
+        if (requestCode == REQUEST_CAPTURE) {
+            if (resultCode == RESULT_OK) {
+                ImageView image = new ImageView(AgregarReporteActivity.this);
+                image.setImageURI(this.photoURI);
+                linearLayout1.addView(image);
+                this.fotosArray.add(((BitmapDrawable) image.getDrawable()).getBitmap());
+                this.btn_locate.setEnabled(true);
+                if( this.fotosArray.size() > 4) {
+                    this.btn_locate.setEnabled(true);
+                }
+                if (fotosArray.size() > 7) {
+                    this.btn_evidencia.setEnabled(false);
+                }
+            }
+        }
+    }
+    public void takePicture(View v) {
+        this.btn_locate.setEnabled(false);
+        Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        File temp = null;
+        try {
+            temp = this.createTemporalFile();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        if (temp != null) {
+            this.photoURI = FileProvider.getUriForFile(this,
+                        getApplicationContext().getPackageName(), temp);
+            i.putExtra(MediaStore.EXTRA_OUTPUT, this.photoURI);
+            startActivityForResult(i, REQUEST_CAPTURE);
+        }
+    }
+
+    private File createTemporalFile() throws IOException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        String name = sdf.format(new Date()) + ".jpg";
+        File path = getExternalFilesDir(
+                Environment.DIRECTORY_PICTURES + "/tmps"
+        );
+
+        return File.createTempFile(name, ".jpg", path);
     }
 
 }

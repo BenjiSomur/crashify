@@ -99,7 +99,6 @@ public class VehiculosActivity extends AppCompatActivity {
     public void onClickNuevoVehiculo(View view) {
         Intent i = new Intent(this, AgregarVehiculoActivity.class);
         i.putExtra("idUsuario", this.idUsuario);
-        hideProgressDialog();
         startActivity(i);
     }
 

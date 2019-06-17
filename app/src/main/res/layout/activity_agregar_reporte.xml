@@ -62,24 +62,26 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp" />
 
-    <ScrollView
+    <HorizontalScrollView
         android:id="@+id/scrollView1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_width="wrap_content"
+        android:layout_height="500px">
 
         <LinearLayout
             android:id="@+id/linearLayout1"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/btn_evidencia"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="Button" />
+                android:onClick="takePicture"
+                android:text="Evidencias" />
+
         </LinearLayout>
-    </ScrollView>
+    </HorizontalScrollView>
 
     <Space
         android:layout_width="match_parent"
