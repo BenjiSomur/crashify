@@ -16,12 +16,16 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".ReporteActivity"
-            android:label="@string/title_activity_reporte"
+            android:name=".VehiculosActivity"
+            android:label="Mis Vehículos"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
+            android:name=".ReporteActivity"
+            android:label="Nuevo Reporte"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".MainActivity"
-            android:label="@string/title_activity_main"
+            android:label="Reportes de Tránsito"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ConfirmarActivity" />
         <activity android:name=".SignUpActivity" />

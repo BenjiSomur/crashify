@@ -91,7 +91,9 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_reportes) {
             // Handle the camera action
         } else if (id == R.id.nav_vehiculos) {
-
+            Intent i = new Intent(this, VehiculosActivity.class);
+            i.putExtra("idUsuario", this.idUsuario);
+            startActivity(i);
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -100,9 +102,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void onClickAgregarReporte(View v) {
-        //Intent i = new Intent(this, MainActivity.class);
-        //i.putExtra("idUsuario", idUsuario);
-        //startActivity(i);
-        Toast.makeText(this, "Holis", Toast.LENGTH_SHORT).show();
+        Intent i = new Intent(this, ReporteActivity.class);
+        i.putExtra("idUsuario", idUsuario);
+        startActivity(i);
     }
 }
