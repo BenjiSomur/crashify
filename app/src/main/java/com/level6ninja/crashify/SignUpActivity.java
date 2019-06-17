@@ -59,7 +59,7 @@ public class SignUpActivity extends AppCompatActivity {
                         new DatePickerDialog.OnDateSetListener() {
                             @Override
                             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                                txt_fechaNacimiento.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
+                                txt_fechaNacimiento.setText(year + "-" + (monthOfYear + 1) + "-" + dayOfMonth);
                             }
                         }, year, month, day);
                 picker.show();
@@ -92,13 +92,6 @@ public class SignUpActivity extends AppCompatActivity {
                 WSPOSTRegisterTask task = new WSPOSTRegisterTask();
                 task.execute(username, telefono, sha256hex, fechaNacimiento, licencia);
             }
-            //String res = HttpUtils.regitrarConductor(txt_username.getText().toString(), txt_telefono.getText().toString(), txt_password.getText().toString());
-            //if (res != null) {
-            //    Intent i = new Intent(this, ConfirmarActivity.class);
-            //    startActivity(i);
-            //} else {
-                //Toast.makeText(this, getString(R.string.detalle_error), Toast.LENGTH_SHORT).show();
-            //}
         }
     }
 
@@ -128,6 +121,8 @@ public class SignUpActivity extends AppCompatActivity {
                 startActivity(i);
                 finish();
             }
+        } else {
+            Toast.makeText(this, "Error de conexión al servidor", Toast.LENGTH_SHORT).show();
         }
     }
 

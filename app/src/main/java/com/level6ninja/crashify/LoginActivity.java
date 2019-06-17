@@ -66,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void registrarOnClick(View view) {
-        Intent i = new Intent(this, MainActivity.class);
+        Intent i = new Intent(this, SignUpActivity.class);
         startActivity(i);
         finish();
     }
@@ -88,7 +88,10 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.makeText(this, getString(R.string.acceso_desconocido), Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(this, "Funcionó", Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent(this, MainActivity.class);
+                    i.putExtra("idUsuario", res.getConductor().getIdConductor());
+                    startActivity(i);
+                    finish();
                 }
             }catch(Exception ex){
                 ex.printStackTrace();

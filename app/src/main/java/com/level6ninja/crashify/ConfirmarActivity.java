@@ -1,10 +1,12 @@
 package com.level6ninja.crashify;
 
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -15,10 +17,20 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.common.hash.Hashing;
+import com.google.gson.Gson;
+import com.level6ninja.crashify.beans.RespuestaValidacion;
+import com.level6ninja.crashify.ws.HttpUtils;
+
+import java.nio.charset.StandardCharsets;
+
 import static android.Manifest.permission.READ_SMS;
 import static android.Manifest.permission.RECEIVE_SMS;
 
 public class ConfirmarActivity extends AppCompatActivity {
+
+    private String json;
+    private ProgressDialog pd_wait;
 
     public static final Integer PETICION_PERMISO_MENSAJE = 1;
     private String telefono;
@@ -32,10 +44,21 @@ public class ConfirmarActivity extends AppCompatActivity {
         Intent intent = getIntent();
         this.telefono= intent.getStringExtra("telefono");
 
-        Toast.makeText(this, this.telefono, Toast.LENGTH_SHORT).show();
-
         txt_token = (EditText)findViewById(R.id.txt_token);
         iniciarBroadcast();
+    }
+
+    private void showProgressDialog() {
+        pd_wait = new ProgressDialog(this);
+        pd_wait.setMessage(getString(R.string.acceso_progress_wait));
+        pd_wait.setCancelable(false);
+        pd_wait.show();
+    }
+
+    private void hideProgressDialog() {
+        if (pd_wait.isShowing()) {
+            pd_wait.hide();
+        }
     }
 
     @Override
@@ -110,8 +133,59 @@ public class ConfirmarActivity extends AppCompatActivity {
         }
     };
 
+    private void resultadoEntrar() {
+        System.out.println("Holis: " + json);
+        hideProgressDialog();
+        if (json != null) {
+            try{
+                Log.v("Objeto recibido",""+ json);
+                RespuestaValidacion res = new Gson().fromJson(json, RespuestaValidacion.class);
+                if (res.getError().isError()) {
+                    Log.v("Error en WS", "Error: " + res.getError().getMensaje());
+                    Toast.makeText(this, res.getError().getMensaje(), Toast.LENGTH_SHORT).show();
+                } else {
+                    Intent i = new Intent(this, MainActivity.class);
+                    i.putExtra("idUsuario", res.getConductor().getIdConductor());
+                    startActivity(i);
+                    finish();
+                }
+            }catch(Exception ex){
+                ex.printStackTrace();
+            }
+        } else {
+            Toast.makeText(this, "Error de conexión", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public void onClickValidar(View view) {
-        Log.v("Holis: ", "Click en Validar");
+        if (!txt_token.getText().toString().isEmpty()) {
+            String token = txt_token.getText().toString();
+            WSPOSTConfirmarTask task = new WSPOSTConfirmarTask();
+            task.execute(this.telefono, token);
+        } else {
+            Toast.makeText(this, "Ingrese su token de acceso", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    class WSPOSTConfirmarTask extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute() {
+            json = null;
+            showProgressDialog();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            return HttpUtils.autenticarConductor(params[0], params[1]);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            json = result;
+            resultadoEntrar();
+        }
     }
 
 }
