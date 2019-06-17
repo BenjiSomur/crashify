@@ -1,6 +1,7 @@
 package com.level6ninja.crashify.ws;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -16,7 +17,7 @@ import java.util.List;
 
 public class HttpUtils {
     /* TODO */
-    private static final String URL_WS_CRASHIFY = "http://192.168.0.15:8084/CrashifyWS/ws";
+    private static final String URL_WS_CRASHIFY = "http://104.42.195.95:8080/CrashifyWS/ws/";
     private static final Integer CONNECT_TIMEOUT = 4000; //MILISEGUNDOS
     private static final Integer READ_TIMEOUT = 10000; //MILISEGUNDOS
 
@@ -24,7 +25,7 @@ public class HttpUtils {
         HttpURLConnection c = null;
         String res = null;
         try {
-            URL u = new URL(URL_WS_CRASHIFY + "/conductores/iniciarSesion");
+            URL u = new URL(URL_WS_CRASHIFY + "conductores/iniciarSesion");
             c = (HttpURLConnection) u.openConnection();
             c.setRequestMethod("POST");
             c.setDoOutput(true);
@@ -48,14 +49,20 @@ public class HttpUtils {
                 }
                 br.close();
                 res = sb.toString();
+            }else{
+                Log.v("Error: ", status.toString());
             }
         } catch (MalformedURLException ex) {
+            Log.v("Malformed lo que sea", ex.getMessage());
             ex.printStackTrace();
             res = (ex.getMessage());
         } catch (IOException ex) {
+            Log.v("IO lo que sea", ex.getMessage());
             ex.printStackTrace();
             res = (ex.getMessage());
-        } finally {
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }finally {
             if (c != null) {
                 c.disconnect();
             }

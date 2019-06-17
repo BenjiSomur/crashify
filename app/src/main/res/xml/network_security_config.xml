@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
     <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">http://192.168.1.70:8084/CrashifyWS/ws</domain>
+        <domain includeSubdomains="true">http://104.42.195.95:8080/CrashifyWS/ws</domain>
     </domain-config>
 </network-security-config>
