@@ -48,8 +48,7 @@ public class VehiculosActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                onClickNuevoVehiculo(view);
             }
         });
 
@@ -84,17 +83,24 @@ public class VehiculosActivity extends AppCompatActivity {
         if (json!= null) {
             vehiculos = new Gson().fromJson(json, vehiculosType);
             if (vehiculos != null) {
-                List<String> listaVehiculos = new ArrayList<>();
+                List<String> listaVehiculos = new ArrayList<String>();
                 for(Vehiculo v : vehiculos){
                     System.out.println("Vehículo:" + v.getNumPlacas());
                     listaVehiculos.add(v.getModelo() + " " + v.getColor());
                 }
-                ArrayAdapter adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_2, listaVehiculos);
+                ArrayAdapter adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listaVehiculos);
                 listVehiculos.setAdapter(adapter);
             } else {
                 Toast.makeText(this, "No se encontraron vehículos", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    public void onClickNuevoVehiculo(View view) {
+        Intent i = new Intent(this, AgregarVehiculoActivity.class);
+        i.putExtra("idUsuario", this.idUsuario);
+        hideProgressDialog();
+        startActivity(i);
     }
 
     class WSPOSTVehiculosTask extends AsyncTask<String, String, String> {

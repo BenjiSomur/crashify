@@ -1,6 +1,8 @@
 package com.level6ninja.crashify;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,12 +16,30 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.level6ninja.crashify.beans.ReporteResumido;
+import com.level6ninja.crashify.beans.Vehiculo;
+import com.level6ninja.crashify.ws.HttpUtils;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private String json;
+    private List<ReporteResumido> reportes;
     private Integer idUsuario;
+    Type reporteType = new TypeToken<ArrayList<ReporteResumido>>(){}.getType();
+
+    private ListView listVehiculos;
+    private ProgressDialog pd_wait;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +65,9 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+
+        WSPOSTReportesTask taskVehiculos = new WSPOSTReportesTask ();
+        taskVehiculos.execute(this.idUsuario.toString());
     }
 
     @Override
@@ -54,6 +77,19 @@ public class MainActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
+        }
+    }
+
+    private void showProgressDialog() {
+        pd_wait = new ProgressDialog(this);
+        pd_wait.setMessage(getString(R.string.acceso_progress_wait));
+        pd_wait.setCancelable(false);
+        pd_wait.show();
+    }
+
+    private void hideProgressDialog() {
+        if (pd_wait.isShowing()) {
+            pd_wait.hide();
         }
     }
 
@@ -102,5 +138,49 @@ public class MainActivity extends AppCompatActivity
         Intent i = new Intent(this, ReporteActivity.class);
         i.putExtra("idUsuario", idUsuario);
         startActivity(i);
+    }
+
+    public void mostrarReportes() {
+        hideProgressDialog();
+        System.out.println(json);
+        if (json!= null) {
+            reportes = new Gson().fromJson(json, reporteType);
+            if (reportes != null) {
+                List<String> listadeReportes = new ArrayList<String>();
+                for(ReporteResumido r : reportes){
+                    if (r.getEstado() == 1) {
+                        listadeReportes.add(r.getHora().toString() + " Estatus: Pendiente");
+                    } else {
+                        listadeReportes.add(r.getHora().toString() + " Estatus: Dictaminado");
+                    }
+
+                }
+                ArrayAdapter adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listadeReportes);
+                listVehiculos.setAdapter(adapter);
+            } else {
+                Toast.makeText(this, "No se encontraron vehículos", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    class WSPOSTReportesTask extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute () {
+            json = null;
+            showProgressDialog();
+        }
+
+        @Override
+        protected String doInBackground (String ... params) {
+            return HttpUtils.getReportes(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute (String result) {
+            super.onPostExecute(result);
+            json = result;
+            mostrarReportes();
+        }
     }
 }
