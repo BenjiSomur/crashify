@@ -44,6 +44,21 @@ public class AgregarReporteActivity extends AppCompatActivity {
     private EditText txt_descripcion;
     private EditText txt_involucrados;
 
+    private final LocationListener locationListener = new LocationListener() {
+
+        public void onLocationChanged(Location location) {
+            updateWithNewLocation(location);
+        }
+
+        public void onProviderDisabled(String provider) {
+            updateWithNewLocation(null);
+        }
+
+        public void onProviderEnabled(String provider) {}
+
+        public void onStatusChanged(String provider,int status,Bundle extras){}
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +69,7 @@ public class AgregarReporteActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         this.idUsuario = intent.getIntExtra("idUsuario", 0);
+        Log.v("usuario: ", idUsuario.toString());
 
         locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -80,44 +96,37 @@ public class AgregarReporteActivity extends AppCompatActivity {
     private void updateWithNewLocation(Location location) {
         String latLongString = "";
         if (location != null) {
+            Log.v("location:", location.toString());
             this.latitud = location.getLatitude();
             this.longitud = location.getLongitude();
             latLongString = "Lat:" + latitud + "\nLong:" + longitud;
         } else {
             latLongString = "No location found";
+            Log.v("ha pasado algo raro","pendejo");
         }
     }
-
-    private final LocationListener locationListener = new LocationListener() {
-
-        public void onLocationChanged(Location location) {
-            updateWithNewLocation(location);
-        }
-
-        public void onProviderDisabled(String provider) {
-            updateWithNewLocation(null);
-        }
-
-        public void onProviderEnabled(String provider) {}
-
-        public void onStatusChanged(String provider,int status,Bundle extras){}
-    };
 
     private boolean validar() {
         return !txt_involucrados.getText().toString().isEmpty() && !txt_descripcion.getText().toString().isEmpty();
     }
 
     public void clickLocation(View view) {
-        if (validar()) {
-            String descripcion = txt_descripcion.getText().toString();
-            String involucrados = txt_involucrados.getText().toString();
-            WSPOSTReporteTask task = new WSPOSTReporteTask();
+        try{
+            if (validar()) {
+                String descripcion = txt_descripcion.getText().toString();
+                String involucrados = txt_involucrados.getText().toString();
+                Log.v("involucrados:",involucrados);
+                WSPOSTReporteTask task = new WSPOSTReporteTask();
 
-            task.execute(descripcion, idUsuario.toString(), Double.toString(latitud), Double.toString(longitud), involucrados);
-        } else {
-            Toast.makeText(this, getString(R.string.acceso_invalido), Toast.LENGTH_SHORT).show();
+                task.execute(descripcion, idUsuario.toString(), Double.toString(latitud), Double.toString(longitud), involucrados);
+            } else {
+                Toast.makeText(this, getString(R.string.acceso_invalido), Toast.LENGTH_SHORT).show();
+            }
+            Toast.makeText(this, "Your Current Position is:\n" + "Lat:" + latitud + "\nLong:" + longitud, Toast.LENGTH_SHORT).show();
+
+        }catch(Exception ex){
+            ex.printStackTrace();
         }
-        Toast.makeText(this, "Your Current Position is:\n" + "Lat:" + latitud + "\nLong:" + longitud, Toast.LENGTH_SHORT).show();
     }
 
     public void reporteGuardado() {
@@ -132,7 +141,6 @@ public class AgregarReporteActivity extends AppCompatActivity {
                     Toast.makeText(this, res.getMensaje(), Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(this, "Reporte Guardado", Toast.LENGTH_SHORT).show();
-                    finish();
                 }
             }catch(Exception ex){
                 ex.printStackTrace();

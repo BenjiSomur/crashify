@@ -38,10 +38,7 @@ public class HttpUtils {
             wr.writeBytes(urlParameters);
             wr.flush();
             wr.close();
-            Log.v("Usuario: ", telefono);
-            Log.v("Contraseña", password);
             Integer status = c.getResponseCode();
-            Log.v("Cosas: ", status.toString());
             if (status == 200 || status == 201) {
                 BufferedReader br = new BufferedReader(new InputStreamReader(c.getInputStream()));
                 StringBuilder sb = new StringBuilder();
@@ -679,7 +676,7 @@ public class HttpUtils {
             DataOutputStream wr = new DataOutputStream(
                     c.getOutputStream());
             String urlParameters = String.format("descripcion=%s&idConductor=%s&latitud=%s&longitud=%s&" +
-                    "placasVehiculos=%s" +
+                    "placasVehiculos=%s",
                     descripcion, idConductor, latitud, longitud, placasVehiculos);
             wr.writeBytes(urlParameters);
             wr.flush();
