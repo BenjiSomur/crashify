@@ -66,8 +66,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void registrarOnClick(View view) {
-        Intent i = new Intent(this, SignUpActivity.class);
+        Intent i = new Intent(this, MainActivity.class);
         startActivity(i);
+        finish();
     }
 
     public boolean validar() {
