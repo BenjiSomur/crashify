@@ -50,6 +50,27 @@ public class AgregarVehiculoActivity extends AppCompatActivity {
         taskMarcas.execute();
     }
 
+    class WSPOSTMarcasTask extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute () {
+            json = null;
+            showProgressDialog();
+        }
+
+        @Override
+        protected String doInBackground (String ... params) {
+            return HttpUtils.getMarcas();
+        }
+
+        @Override
+        protected void onPostExecute (String result) {
+            super.onPostExecute(result);
+            json = result;
+            cargarMarcas();
+        }
+    }
+
     @Override
     public void onDestroy(){
         super.onDestroy();
@@ -91,27 +112,6 @@ public class AgregarVehiculoActivity extends AppCompatActivity {
             }
         } else {
             Toast.makeText(this, "Error en la conexión", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    class WSPOSTMarcasTask extends AsyncTask<String, String, String> {
-
-        @Override
-        protected void onPreExecute () {
-            json = null;
-            showProgressDialog();
-        }
-
-        @Override
-        protected String doInBackground (String ... params) {
-            return HttpUtils.getMarcas();
-        }
-
-        @Override
-        protected void onPostExecute (String result) {
-            super.onPostExecute(result);
-            json = result;
-            cargarMarcas();
         }
     }
 }
