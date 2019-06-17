@@ -428,6 +428,19 @@ public class HttpUtils {
             conn.setDoOutput(true);
             conn.setConnectTimeout(CONNECT_TIMEOUT);
             conn.setReadTimeout(READ_TIMEOUT);
+            Integer status = conn.getResponseCode();
+            Log.v("Estatus aseguradoras: ", status.toString());
+            if (status == 200 || status == 201) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = br.readLine()) != null) {
+                    sb.append(line+"\n");
+                }
+                br.close();
+                res = sb.toString();
+            }
+
         }catch(MalformedURLException ex){
             ex.printStackTrace();
         }catch(IOException ex){
