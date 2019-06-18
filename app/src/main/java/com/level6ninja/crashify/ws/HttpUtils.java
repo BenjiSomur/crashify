@@ -17,7 +17,7 @@ import java.util.List;
 
 public class HttpUtils {
     /* TODO */
-    private static final String URL_WS_CRASHIFY = "http://104.42.195.95:8080/CrashifyWS/ws/";
+    private static final String URL_WS_CRASHIFY = "http://192.168.1.70:8084/CrashifyWS/ws/";
     private static final Integer CONNECT_TIMEOUT = 4000; //MILISEGUNDOS
     private static final Integer READ_TIMEOUT = 10000; //MILISEGUNDOS
 
@@ -749,6 +749,50 @@ public class HttpUtils {
             }
         }
         return  res;
+    }
+
+    public static String obtenerDetallesReporte(String idReporte){
+        HttpURLConnection c = null;
+        String res = null;
+        try {
+            URL u = new URL(URL_WS_CRASHIFY + "/reportes/obtenerDetalleReporte");
+            c = (HttpURLConnection) u.openConnection();
+            c.setRequestMethod("POST");
+            c.setDoOutput(true);
+            c.setConnectTimeout(CONNECT_TIMEOUT);
+            c.setReadTimeout(READ_TIMEOUT);
+
+            DataOutputStream wr = new DataOutputStream(
+                    c.getOutputStream());
+            String urlParameters = String.format("idReporte=%s", idReporte);
+            wr.writeBytes(urlParameters);
+            wr.flush();
+            wr.close();
+
+            Integer status = c.getResponseCode();
+            Log.v("Estatus vehiculos: ", status.toString());
+            if (status == 200 || status == 201) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(c.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = br.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+                br.close();
+                res = sb.toString();
+            }
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+            res = (ex.getMessage());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            res = (ex.getMessage());
+        } finally {
+            if (c != null) {
+                c.disconnect();
+            }
+        }
+        return res;
     }
 
 }

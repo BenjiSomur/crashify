@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.support.v4.view.GravityCompat;
@@ -23,14 +22,12 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.level6ninja.crashify.beans.ReporteDictamen;
 import com.level6ninja.crashify.beans.ReporteResumido;
-import com.level6ninja.crashify.beans.Vehiculo;
 import com.level6ninja.crashify.ws.HttpUtils;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -44,14 +41,21 @@ public class MainActivity extends AppCompatActivity
     private Integer idUsuario;
     Type reporteType = new TypeToken<ArrayList<ReporteResumido>>(){}.getType();
 
-    private ListView listVehiculos;
+    private ListView listReportes;
     private ProgressDialog pd_wait;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        this.listVehiculos = (ListView) findViewById(R.id.listReportes);
+        this.listReportes = (ListView) findViewById(R.id.listReportes);
+        this.listReportes.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                mostrarDetalles(position);
+                return true;
+            }
+        });
         Intent intent = getIntent();
         this.idUsuario = intent.getIntExtra("idUsuario", 0);
 
@@ -72,7 +76,7 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
-        listVehiculos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listReportes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
@@ -174,8 +178,9 @@ public class MainActivity extends AppCompatActivity
 
             }catch(Exception ex){
                 Log.v("Error", ex.getStackTrace().toString());
+                return;
             }
-            if (reportes != null) {
+            if (!reportes.isEmpty()) {
                 System.out.println(reportes.get(0).getHora());
                 List<String> listadeReportes = new ArrayList<>();
                 for(ReporteResumido r : reportes){
@@ -188,9 +193,9 @@ public class MainActivity extends AppCompatActivity
 
                 }
                 ArrayAdapter adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listadeReportes);
-                listVehiculos.setAdapter(adapter);
+                listReportes.setAdapter(adapter);
             } else {
-                Toast.makeText(this, "No se encontraron vehículos", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "No se encontraron reportes aun", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -214,5 +219,41 @@ public class MainActivity extends AppCompatActivity
             json = result;
             mostrarReportes();
         }
+    }
+
+    class WSPOSTDetalleReporteTask extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute () {
+            json = null;
+            showProgressDialog();
+        }
+
+        @Override
+        protected String doInBackground (String ... params) {
+            return HttpUtils.obtenerDetallesReporte(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute (String result) {
+            super.onPostExecute(result);
+            json = result;
+            detallesReporte();
+        }
+    }
+
+    private void mostrarDetalles(int posicion){
+       String idReporte = this.reportes.get(posicion).getIdReporte().toString();
+        WSPOSTDetalleReporteTask task = new WSPOSTDetalleReporteTask();
+        task.execute(idReporte);
+    }
+
+    private void detallesReporte() {
+        hideProgressDialog();
+        ReporteDictamen rd = new Gson().fromJson(json, ReporteDictamen.class);
+        System.out.println("funcionó"+rd.getDictamen());
+        Intent intent = new Intent(this,DetalleActivity.class);
+        intent.putExtra("idReporte", rd.getIdReporte());
+        startActivity(intent);
     }
 }

@@ -126,6 +126,7 @@ public class VehiculosActivity extends AppCompatActivity {
                 Toast.makeText(this, "No se encontraron vehículos", Toast.LENGTH_SHORT).show();
             }
         }
+        finish();
     }
 
     public void onClickNuevoVehiculo(View view) {

@@ -6,13 +6,13 @@ public class ReporteDictamen {
     private Integer idReporte;
     private String descripcion;
     private String numPlacas;
-    private Date hora;
+    private String hora;
     private Float latitud;
     private Float longitud;
     private String nombrePerito;
     private String dictamen;
 
-    public ReporteDictamen(Integer idReporte, String descripcion, String numPlacas, Date hora, Float latitud, Float longitud, String nombrePerito, String dictamen) {
+    public ReporteDictamen(Integer idReporte, String descripcion, String numPlacas, String hora, Float latitud, Float longitud, String nombrePerito, String dictamen) {
         this.idReporte = idReporte;
         this.descripcion = descripcion;
         this.numPlacas = numPlacas;
@@ -58,11 +58,11 @@ public class ReporteDictamen {
         this.numPlacas = numPlacas;
     }
 
-    public Date getHora() {
+    public String getHora() {
         return hora;
     }
 
-    public void setHora(Date hora) {
+    public void setHora(String hora) {
         this.hora = hora;
     }
 
