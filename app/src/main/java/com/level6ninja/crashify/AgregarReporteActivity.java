@@ -32,9 +32,13 @@ import android.widget.Toast;
 
 import com.google.common.hash.Hashing;
 import com.google.gson.Gson;
+import com.level6ninja.crashify.beans.Reporte;
 import com.level6ninja.crashify.beans.Respuesta;
+import com.level6ninja.crashify.beans.RespuestaReporte;
 import com.level6ninja.crashify.beans.RespuestaValidacion;
 import com.level6ninja.crashify.ws.HttpUtils;
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +56,7 @@ public class AgregarReporteActivity extends AppCompatActivity {
     public static final int PICK_IMAGE = 100;
     private Uri photoURI;
 
-    private String json;
+    private String json = null;
     private Integer imageCount;
     private Integer idUsuario;
     LocationManager locManager;
@@ -178,6 +182,38 @@ public class AgregarReporteActivity extends AppCompatActivity {
         }
     }
 
+    private void subirImagenes(){
+        String idReporte = null;
+        try{
+            RespuestaReporte respuestaReporte = new Gson().fromJson(json, RespuestaReporte.class);
+            if(respuestaReporte.isError()){
+                Toast.makeText(this, ""+respuestaReporte.getErrorcode().toString()+
+                        respuestaReporte.getMensaje(), Toast.LENGTH_SHORT).show();
+                return;
+            }else{
+                try{
+                    Reporte reporteAux = new Reporte();
+                    JSONObject object = new JSONObject(json);
+                    if (object.has("idReporte")){
+                        idReporte = object.get("idReporte").toString();
+                    }else{
+                        Toast.makeText(this, "Error de la base de datos", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }catch(Exception ex){
+                    ex.printStackTrace();
+                }
+            }
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        if(idReporte!=null){
+            WSPOSTEvidenciasTask task = new WSPOSTEvidenciasTask();
+            task.execute(idReporte, fotosArray);
+        }
+
+    }
+
     class WSPOSTReporteTask extends AsyncTask<String, String, String> {
 
         @Override
@@ -189,6 +225,28 @@ public class AgregarReporteActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             return HttpUtils.agregarReporte(params[0], params[1], params[2], params[3], params[4]);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            json = result;
+            Log.v("recibido", json);
+            subirImagenes();
+        }
+    }
+
+    class WSPOSTEvidenciasTask extends AsyncTask<Object, String, String> {
+
+        @Override
+        protected void onPreExecute() {
+            json = null;
+            showProgressDialog();
+        }
+
+        @Override
+        protected String doInBackground(Object... params) {
+            return HttpUtils.subirEvidencia((String)params[0], (List<Bitmap>)params[1]);
         }
 
         @Override

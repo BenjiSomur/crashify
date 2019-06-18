@@ -17,7 +17,7 @@ import java.util.List;
 
 public class HttpUtils {
     /* TODO */
-    private static final String URL_WS_CRASHIFY = "http://104.42.195.95:8080/CrashifyWS/ws/";
+    private static final String URL_WS_CRASHIFY = "http://10.50.23.48:8084/CrashifyWS/ws/";
     private static final Integer CONNECT_TIMEOUT = 4000; //MILISEGUNDOS
     private static final Integer READ_TIMEOUT = 10000; //MILISEGUNDOS
 
@@ -507,12 +507,13 @@ public class HttpUtils {
             DataOutputStream wr = new DataOutputStream(
                     conn.getOutputStream()
             );
-            String urlParameters = String.format("idCOnductor=%s",idConductor);
+            String urlParameters = String.format("idConductor=%s",idConductor);
             wr.writeBytes(urlParameters);
             wr.flush();
             wr.close();
 
             Integer status = conn.getResponseCode();
+            Log.v("status:", status.toString());
             if(status == 200 || status == 201){
                 BufferedReader br = new BufferedReader(
                   new InputStreamReader(
@@ -540,7 +541,7 @@ public class HttpUtils {
         return res;
     }
 
-    public static String subirEvidencia(String idReporte, Bitmap bitmap){
+    public static String subirEvidencia(String idReporte, List<Bitmap> imagenes){
         String res = null;
         HttpURLConnection conn = null;
 
@@ -557,54 +558,55 @@ public class HttpUtils {
             conn.setRequestProperty("Connection", "Keep-Alive");
             conn.setRequestProperty("User-Agent","Android MultiPart HTTP Client 1.0");
             conn.setRequestProperty("Content-Type","application/octet-stream");
+            StringBuilder sb = new StringBuilder();
+            for(Bitmap bitmap: imagenes) {
+                outputStream = new DataOutputStream(conn.getOutputStream());
 
-            outputStream = new DataOutputStream(conn.getOutputStream());
+                ByteArrayOutputStream bitMapOutputStream =
+                        new ByteArrayOutputStream();
+                bitmap.compress(
+                        Bitmap.CompressFormat.JPEG,
+                        75,
+                        bitMapOutputStream
+                );
+                byte original[] = bitMapOutputStream.toByteArray();
 
-            ByteArrayOutputStream bitMapOutputStream =
-                    new ByteArrayOutputStream();
-            bitmap.compress(
-                    Bitmap.CompressFormat.JPEG,
-                    75,
-                    bitMapOutputStream
-            );
-            byte original[]=bitMapOutputStream.toByteArray();
-
-            int blockBytes, totalBytes, bufferSize;
-            byte[] buffer;
-            int maxBufferSize = 1 * 1024 * 1024;
-            int lastByte = 0;
-            totalBytes = original.length;
-            bufferSize = Math.min(totalBytes, maxBufferSize);
-            buffer = Arrays.copyOfRange(original, lastByte, bufferSize);
-            blockBytes = buffer.length;
-            while (totalBytes > 0) {
-                outputStream.write(buffer, 0,bufferSize);
-                totalBytes -= blockBytes;
-                lastByte += blockBytes;
-                bufferSize = Math.min(totalBytes,maxBufferSize);
-                buffer = Arrays.copyOfRange(original,lastByte, lastByte+bufferSize);
+                int blockBytes, totalBytes, bufferSize;
+                byte[] buffer;
+                int maxBufferSize = 1 * 1024 * 1024;
+                int lastByte = 0;
+                totalBytes = original.length;
+                bufferSize = Math.min(totalBytes, maxBufferSize);
+                buffer = Arrays.copyOfRange(original, lastByte, bufferSize);
                 blockBytes = buffer.length;
-            }
-            bitMapOutputStream.close();
-            outputStream.flush();
+                while (totalBytes > 0) {
+                    outputStream.write(buffer, 0, bufferSize);
+                    totalBytes -= blockBytes;
+                    lastByte += blockBytes;
+                    bufferSize = Math.min(totalBytes, maxBufferSize);
+                    buffer = Arrays.copyOfRange(original, lastByte, lastByte + bufferSize);
+                    blockBytes = buffer.length;
+                }
+                bitMapOutputStream.close();
+                outputStream.flush();
+                Integer status = conn.getResponseCode();
+                if (status == 200 || status == 201) {
+                    if (conn.getInputStream() != null) {
+                        BufferedReader br = new BufferedReader(
+                                new InputStreamReader(
+                                        conn.getInputStream()
+                                )
+                        );
+                        String line;
+                        while ((line = br.readLine()) != null) {
+                            sb.append(line + "\n");
+                        }
+                        br.close();
 
-            Integer status = conn.getResponseCode();
-            if(status == 200 || status == 201){
-                if(conn.getInputStream() != null){
-                    BufferedReader br = new BufferedReader(
-                            new InputStreamReader(
-                                    conn.getInputStream()
-                            )
-                    );
-                    StringBuilder sb = new StringBuilder();
-                    String line;
-                    while((line = br.readLine())!=null){
-                        sb.append(line + "\n");
                     }
-                    br.close();
-                    res = sb.toString();
                 }
             }
+            res = sb.toString();
         }catch(MalformedURLException ex){
             ex.printStackTrace();
         }catch(IOException ex){

@@ -4,11 +4,11 @@ import java.sql.Date;
 
 public class ReporteResumido {
     private Integer idReporte;
-    private Date hora;
+    private String hora;
     private String numPlacas;
     private Integer estado;
 
-    public ReporteResumido(Integer idReporte, Date hora, String numPlacas, Integer estado) {
+    public ReporteResumido(Integer idReporte, String hora, String numPlacas, Integer estado) {
         this.idReporte = idReporte;
         this.hora = hora;
         this.numPlacas = numPlacas;
@@ -26,11 +26,11 @@ public class ReporteResumido {
         this.idReporte = idReporte;
     }
 
-    public Date getHora() {
+    public String getHora() {
         return hora;
     }
 
-    public void setHora(Date hora) {
+    public void setHora(String hora) {
         this.hora = hora;
     }
 

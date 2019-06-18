@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -21,10 +22,14 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.level6ninja.crashify.beans.ReporteResumido;
 import com.level6ninja.crashify.beans.Vehiculo;
 import com.level6ninja.crashify.ws.HttpUtils;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -34,7 +39,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private String json;
-    private List<ReporteResumido> reportes;
+    private List<ReporteResumido> reportes = new ArrayList<>();
     private Integer idUsuario;
     Type reporteType = new TypeToken<ArrayList<ReporteResumido>>(){}.getType();
 
@@ -45,7 +50,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        this.listVehiculos = (ListView) findViewById(R.id.listReportes);
         Intent intent = getIntent();
         this.idUsuario = intent.getIntExtra("idUsuario", 0);
 
@@ -144,14 +149,26 @@ public class MainActivity extends AppCompatActivity
         hideProgressDialog();
         System.out.println(json);
         if (json!= null) {
-            reportes = new Gson().fromJson(json, reporteType);
+
+            try{
+                JSONArray array = new JSONArray(json);
+                for(int x = 0; x < array.length(); x++){
+                    ReporteResumido reporteAux = new Gson().fromJson(array.getJSONObject(x).toString(), ReporteResumido.class);
+                    reportes.add(reporteAux);
+                }
+
+            }catch(Exception ex){
+                Log.v("Error", ex.getStackTrace().toString());
+            }
             if (reportes != null) {
-                List<String> listadeReportes = new ArrayList<String>();
+                System.out.println(reportes.get(0).getHora());
+                List<String> listadeReportes = new ArrayList<>();
                 for(ReporteResumido r : reportes){
+                    String hora = r.getHora();
                     if (r.getEstado() == 1) {
-                        listadeReportes.add(r.getHora().toString() + " Estatus: Pendiente");
+                        listadeReportes.add(hora + " Estatus: Pendiente");
                     } else {
-                        listadeReportes.add(r.getHora().toString() + " Estatus: Dictaminado");
+                        listadeReportes.add(hora + " Estatus: Dictaminado");
                     }
 
                 }
