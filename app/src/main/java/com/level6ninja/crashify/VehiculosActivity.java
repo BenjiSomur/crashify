@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.level6ninja.crashify.beans.InfoVehiculo;
 import com.level6ninja.crashify.beans.Vehiculo;
 import com.level6ninja.crashify.ws.HttpUtils;
 
@@ -25,9 +26,9 @@ import java.util.List;
 public class VehiculosActivity extends AppCompatActivity {
 
     private String json;
-    private List<Vehiculo> vehiculos;
+    private List<InfoVehiculo> vehiculos;
     private Integer idUsuario;
-    Type vehiculosType = new TypeToken<ArrayList<Vehiculo>>(){}.getType();
+    Type vehiculosType = new TypeToken<ArrayList<InfoVehiculo>>(){}.getType();
 
     private ListView listVehiculos;
     private ProgressDialog pd_wait;
@@ -43,6 +44,7 @@ public class VehiculosActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         this.idUsuario = intent.getIntExtra("idUsuario", 0);
+        System.out.println("id de usuario: "+ idUsuario.toString());
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -84,7 +86,7 @@ public class VehiculosActivity extends AppCompatActivity {
             vehiculos = new Gson().fromJson(json, vehiculosType);
             if (vehiculos != null) {
                 List<String> listaVehiculos = new ArrayList<String>();
-                for(Vehiculo v : vehiculos){
+                for(InfoVehiculo v : vehiculos){
                     System.out.println("Vehículo:" + v.getNumPlacas());
                     listaVehiculos.add(v.getModelo() + " " + v.getColor());
                 }

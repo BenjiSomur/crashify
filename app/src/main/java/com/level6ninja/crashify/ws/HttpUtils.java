@@ -17,7 +17,7 @@ import java.util.List;
 
 public class HttpUtils {
     /* TODO */
-    private static final String URL_WS_CRASHIFY = "http://192.168.1.70:8084/CrashifyWS/ws/";
+    private static final String URL_WS_CRASHIFY = "http://104.42.195.95:8080/CrashifyWS/ws/";
     private static final Integer CONNECT_TIMEOUT = 4000; //MILISEGUNDOS
     private static final Integer READ_TIMEOUT = 10000; //MILISEGUNDOS
 
