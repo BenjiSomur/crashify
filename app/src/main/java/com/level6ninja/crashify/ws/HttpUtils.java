@@ -17,7 +17,7 @@ import java.util.List;
 
 public class HttpUtils {
     /* TODO */
-    private static final String URL_WS_CRASHIFY = "http://10.50.23.48:8084/CrashifyWS/ws/";
+    private static final String URL_WS_CRASHIFY = "http://192.168.1.70:8084/CrashifyWS/ws/";
     private static final Integer CONNECT_TIMEOUT = 4000; //MILISEGUNDOS
     private static final Integer READ_TIMEOUT = 10000; //MILISEGUNDOS
 
@@ -159,9 +159,9 @@ public class HttpUtils {
         return res;
     }
 
-    public static String regitrarVehiculo(String numPlacas, String marca,
+    public static String regitrarVehiculo(String numPlacas, String idMarca,
                                           String modelo, String color,
-                                          String year, String idConductor) {
+                                          String year,String numPoliza, String idAseguradora, String fechaVencimiento, String idConductor) {
         HttpURLConnection c = null;
         String res = null;
         try {
@@ -174,9 +174,9 @@ public class HttpUtils {
 
             DataOutputStream wr = new DataOutputStream(
                     c.getOutputStream());
-            String urlParameters = String.format("numPlacas=%s&marca=%s&modelo=%s&" +
-                            "color=%s&año=%s&idConductor=%s"
-                    , numPlacas, marca, modelo, color, year, idConductor);
+            String urlParameters = String.format("numPlacas=%s&idMarca=%s&modelo=%s&" +
+                            "color=%s&year=%s&numPoliza=%s&idAseguradora=%s&fechaVencimiento=%s&idConductor=%s"
+                    , numPlacas, idMarca, modelo, color, year,numPoliza,idAseguradora,fechaVencimiento, idConductor);
             wr.writeBytes(urlParameters);
             wr.flush();
             wr.close();

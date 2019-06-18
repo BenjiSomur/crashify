@@ -109,6 +109,22 @@
             android:inputType="text" />
     </android.support.design.widget.TextInputLayout>
 
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <EditText
+            android:id="@+id/txt_fechaVencimiento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:maxLength="10"
+            android:hint="Vecha de vencimiento de la póliza(YYYY-mm-dd)"
+            android:inputType="date" />
+    </android.support.design.widget.TextInputLayout>
+
     <Space
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -119,8 +135,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorAccent"
-        android:text="Guardar Vehículo"
         android:onClick="onClickAgregarVehiculo"
+        android:text="Guardar Vehículo"
         android:textColor="#FFFCFC"
         android:textSize="18sp" />
 
