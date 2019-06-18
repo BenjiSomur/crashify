@@ -1,6 +1,8 @@
 package com.level6ninja.crashify;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -16,6 +19,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.level6ninja.crashify.beans.InfoVehiculo;
+import com.level6ninja.crashify.beans.Respuesta;
 import com.level6ninja.crashify.beans.Vehiculo;
 import com.level6ninja.crashify.ws.HttpUtils;
 
@@ -41,6 +45,13 @@ public class VehiculosActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         this.listVehiculos = (ListView)findViewById(R.id.listVehiculos);
+        this.listVehiculos.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int pos, long id) {
+                eliminarClick(pos);
+                return true;
+            }
+        });
 
         Intent intent = getIntent();
         this.idUsuario = intent.getIntExtra("idUsuario", 0);
@@ -56,6 +67,11 @@ public class VehiculosActivity extends AppCompatActivity {
 
         WSPOSTVehiculosTask taskVehiculos = new WSPOSTVehiculosTask();
         taskVehiculos.execute(this.idUsuario.toString());
+    }
+
+    private void eliminarClick(int pos) {
+        WSDELETEVehiculoTask taskVehiculos = new WSDELETEVehiculoTask();
+        taskVehiculos.execute(this.vehiculos.get(pos).getNumPlacas());
     }
 
     @Override
@@ -98,6 +114,20 @@ public class VehiculosActivity extends AppCompatActivity {
         }
     }
 
+    private void eliminado(){
+        hideProgressDialog();
+        System.out.println(json);
+        if (json!= null) {
+            Respuesta res;
+            res = new Gson().fromJson(json, Respuesta.class);
+            if (res != null) {
+                Toast.makeText(this, res.getMensaje(), Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "No se encontraron vehículos", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     public void onClickNuevoVehiculo(View view) {
         Intent i = new Intent(this, AgregarVehiculoActivity.class);
         i.putExtra("idUsuario", this.idUsuario);
@@ -122,6 +152,27 @@ public class VehiculosActivity extends AppCompatActivity {
             super.onPostExecute(result);
             json = result;
             cargarListaVehiculos();
+        }
+    }
+
+    class WSDELETEVehiculoTask extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute () {
+            json = null;
+            showProgressDialog();
+        }
+
+        @Override
+        protected String doInBackground (String ... params) {
+            return HttpUtils.eliminarVehiculo(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute (String result) {
+            super.onPostExecute(result);
+            json = result;
+            eliminado();
         }
     }
 

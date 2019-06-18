@@ -17,6 +17,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -71,8 +72,22 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
+        listVehiculos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position,
+                                    long id) {
+                verReporte(position);
+            }
+        });
+
         WSPOSTReportesTask taskVehiculos = new WSPOSTReportesTask ();
         taskVehiculos.execute(this.idUsuario.toString());
+    }
+
+    private void verReporte(int position) {
+        Intent i = new Intent(this, DetalleActivity.class);
+        i.putExtra("idReporte", reportes.get(position).getIdReporte());
+        startActivity(i);
     }
 
     @Override

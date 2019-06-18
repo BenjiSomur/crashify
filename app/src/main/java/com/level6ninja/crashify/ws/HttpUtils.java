@@ -716,7 +716,7 @@ public class HttpUtils {
         try{
             URL url = new URL(URL_WS_CRASHIFY + "/vehiculos/eliminarVehiculo");
             conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
+            conn.setRequestMethod("DELETE");
             conn.setReadTimeout(READ_TIMEOUT);
             conn.setConnectTimeout(CONNECT_TIMEOUT);
 
