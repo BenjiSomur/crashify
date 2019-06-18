@@ -17,7 +17,7 @@ import java.util.List;
 
 public class HttpUtils {
     /* TODO */
-    private static final String URL_WS_CRASHIFY = "http://192.168.1.70:8084/CrashifyWS/ws/";
+    private static final String URL_WS_CRASHIFY = "http://104.42.195.95:8080/CrashifyWS/ws/";
     private static final Integer CONNECT_TIMEOUT = 4000; //MILISEGUNDOS
     private static final Integer READ_TIMEOUT = 10000; //MILISEGUNDOS
 
@@ -48,7 +48,7 @@ public class HttpUtils {
                 }
                 br.close();
                 res = sb.toString();
-            }else{
+            } else {
                 Log.v("Error: ", status.toString());
             }
 
@@ -60,9 +60,9 @@ public class HttpUtils {
             Log.v("IO lo que sea", ex.getMessage());
             ex.printStackTrace();
             res = (ex.getMessage());
-        }catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
-        }finally {
+        } finally {
             if (c != null) {
                 c.disconnect();
             }
@@ -161,7 +161,7 @@ public class HttpUtils {
 
     public static String regitrarVehiculo(String numPlacas, String idMarca,
                                           String modelo, String color,
-                                          String year,String numPoliza, String idAseguradora, String fechaVencimiento, String idConductor) {
+                                          String year, String numPoliza, String idAseguradora, String fechaVencimiento, String idConductor) {
         HttpURLConnection c = null;
         String res = null;
         try {
@@ -176,7 +176,7 @@ public class HttpUtils {
                     c.getOutputStream());
             String urlParameters = String.format("numPlacas=%s&idMarca=%s&modelo=%s&" +
                             "color=%s&year=%s&numPoliza=%s&idAseguradora=%s&fechaVencimiento=%s&idConductor=%s"
-                    , numPlacas, idMarca, modelo, color, year,numPoliza,idAseguradora,fechaVencimiento, idConductor);
+                    , numPlacas, idMarca, modelo, color, year, numPoliza, idAseguradora, fechaVencimiento, idConductor);
             wr.writeBytes(urlParameters);
             wr.flush();
             wr.close();
@@ -297,10 +297,10 @@ public class HttpUtils {
         return res;
     }
 
-    public static String getVehiculosReporte(String idReporte){
+    public static String getVehiculosReporte(String idReporte) {
         HttpURLConnection conn = null;
         String res = null;
-        try{
+        try {
             URL u = new URL(URL_WS_CRASHIFY + "/conductores/iniciarSesion");
             conn = (HttpURLConnection) u.openConnection();
             conn.setRequestMethod("POST");
@@ -310,7 +310,7 @@ public class HttpUtils {
 
             DataOutputStream wr = new DataOutputStream(
                     conn.getOutputStream());
-            String urlParameters = String.format("idReporte=%s",idReporte);
+            String urlParameters = String.format("idReporte=%s", idReporte);
             wr.writeBytes(urlParameters);
             wr.flush();
             wr.close();
@@ -321,27 +321,27 @@ public class HttpUtils {
                 StringBuilder sb = new StringBuilder();
                 String line;
                 while ((line = br.readLine()) != null) {
-                    sb.append(line+"\n");
+                    sb.append(line + "\n");
                 }
                 br.close();
                 res = sb.toString();
             }
-        }catch(MalformedURLException ex) {
+        } catch (MalformedURLException ex) {
             ex.printStackTrace();
-        }catch(IOException ex){
+        } catch (IOException ex) {
             ex.printStackTrace();
-        }finally{
-            if(conn != null){
+        } finally {
+            if (conn != null) {
                 conn.disconnect();
             }
         }
         return res;
     }
 
-    public static String getMarcas(){
+    public static String getMarcas() {
         HttpURLConnection conn = null;
         String res = null;
-        try{
+        try {
             URL url = new URL(URL_WS_CRASHIFY + "/marcas/getMarcas");
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
@@ -355,18 +355,18 @@ public class HttpUtils {
                 StringBuilder sb = new StringBuilder();
                 String line;
                 while ((line = br.readLine()) != null) {
-                    sb.append(line+"\n");
+                    sb.append(line + "\n");
                 }
                 br.close();
                 res = sb.toString();
             }
 
-        }catch(MalformedURLException ex){
+        } catch (MalformedURLException ex) {
             ex.printStackTrace();
-        }catch(IOException ex){
+        } catch (IOException ex) {
             ex.printStackTrace();
-        }finally{
-            if(conn!=null){
+        } finally {
+            if (conn != null) {
                 conn.disconnect();
             }
         }
@@ -374,11 +374,11 @@ public class HttpUtils {
         return res;
     }
 
-    public static String getMarca(String idMarca){
+    public static String getMarca(String idMarca) {
         HttpURLConnection conn = null;
         String res = null;
-        try{
-            URL url = new URL(URL_WS_CRASHIFY+"/marcas/getMarca");
+        try {
+            URL url = new URL(URL_WS_CRASHIFY + "/marcas/getMarca");
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setReadTimeout(READ_TIMEOUT);
@@ -387,7 +387,7 @@ public class HttpUtils {
             DataOutputStream wr = new DataOutputStream(
                     conn.getOutputStream()
             );
-            String urlParameters = String.format("idMarca=%s",idMarca);
+            String urlParameters = String.format("idMarca=%s", idMarca);
             wr.writeBytes(urlParameters);
             wr.flush();
             wr.close();
@@ -403,22 +403,23 @@ public class HttpUtils {
                 br.close();
                 res = sb.toString();
             }
-        }catch(MalformedURLException ex){
+        } catch (MalformedURLException ex) {
             ex.printStackTrace();
-        }catch(IOException ex){
+        } catch (IOException ex) {
             ex.printStackTrace();
-        }finally{
-            if(conn!=null){
+        } finally {
+            if (conn != null) {
                 conn.disconnect();
             }
         }
 
         return res;
     }
-    public static String getAseguradoras(){
+
+    public static String getAseguradoras() {
         HttpURLConnection conn = null;
         String res = null;
-        try{
+        try {
             URL url = new URL(URL_WS_CRASHIFY + "/aseguradoras/getAseguradoras");
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
@@ -432,18 +433,18 @@ public class HttpUtils {
                 StringBuilder sb = new StringBuilder();
                 String line;
                 while ((line = br.readLine()) != null) {
-                    sb.append(line+"\n");
+                    sb.append(line + "\n");
                 }
                 br.close();
                 res = sb.toString();
             }
 
-        }catch(MalformedURLException ex){
+        } catch (MalformedURLException ex) {
             ex.printStackTrace();
-        }catch(IOException ex){
+        } catch (IOException ex) {
             ex.printStackTrace();
-        }finally{
-            if(conn!=null){
+        } finally {
+            if (conn != null) {
                 conn.disconnect();
             }
         }
@@ -451,11 +452,11 @@ public class HttpUtils {
         return res;
     }
 
-    public static String getAseguradora(String idAseguradora){
+    public static String getAseguradora(String idAseguradora) {
         HttpURLConnection conn = null;
         String res = null;
-        try{
-            URL url = new URL(URL_WS_CRASHIFY+"/aseguradoras/getAseguradora");
+        try {
+            URL url = new URL(URL_WS_CRASHIFY + "/aseguradoras/getAseguradora");
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setReadTimeout(READ_TIMEOUT);
@@ -464,7 +465,7 @@ public class HttpUtils {
             DataOutputStream wr = new DataOutputStream(
                     conn.getOutputStream()
             );
-            String urlParameters = String.format("idMarca=%s",idAseguradora);
+            String urlParameters = String.format("idMarca=%s", idAseguradora);
             wr.writeBytes(urlParameters);
             wr.flush();
             wr.close();
@@ -480,12 +481,12 @@ public class HttpUtils {
                 br.close();
                 res = sb.toString();
             }
-        }catch(MalformedURLException ex){
+        } catch (MalformedURLException ex) {
             ex.printStackTrace();
-        }catch(IOException ex){
+        } catch (IOException ex) {
             ex.printStackTrace();
-        }finally{
-            if(conn!=null){
+        } finally {
+            if (conn != null) {
                 conn.disconnect();
             }
         }
@@ -493,11 +494,11 @@ public class HttpUtils {
         return res;
     }
 
-    public static String getReportes(String idConductor){
+    public static String getReportes(String idConductor) {
         String res = null;
         HttpURLConnection conn = null;
 
-        try{
+        try {
             URL url = new URL(URL_WS_CRASHIFY + "/reportes/getReportes");
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
@@ -507,33 +508,33 @@ public class HttpUtils {
             DataOutputStream wr = new DataOutputStream(
                     conn.getOutputStream()
             );
-            String urlParameters = String.format("idConductor=%s",idConductor);
+            String urlParameters = String.format("idConductor=%s", idConductor);
             wr.writeBytes(urlParameters);
             wr.flush();
             wr.close();
 
             Integer status = conn.getResponseCode();
             Log.v("status:", status.toString());
-            if(status == 200 || status == 201){
+            if (status == 200 || status == 201) {
                 BufferedReader br = new BufferedReader(
-                  new InputStreamReader(
-                          conn.getInputStream()
-                  )
+                        new InputStreamReader(
+                                conn.getInputStream()
+                        )
                 );
                 StringBuilder sb = new StringBuilder();
                 String line;
-                while((line = br.readLine())!=null){
+                while ((line = br.readLine()) != null) {
                     sb.append(line + "\n");
                 }
                 br.close();
                 res = sb.toString();
             }
-        }catch(MalformedURLException ex){
+        } catch (MalformedURLException ex) {
             ex.printStackTrace();
-        }catch(IOException ex){
+        } catch (IOException ex) {
             ex.printStackTrace();
-        }finally{
-            if(conn != null){
+        } finally {
+            if (conn != null) {
                 conn.disconnect();
             }
         }
@@ -541,14 +542,14 @@ public class HttpUtils {
         return res;
     }
 
-    public static String subirEvidencia(String idReporte, List<Bitmap> imagenes){
+    public static String subirEvidencia(String idReporte, Bitmap bitmap) {
         String res = null;
         HttpURLConnection conn = null;
 
         DataOutputStream outputStream = null;
 
-        try{
-            URL url = new URL(URL_WS_CRASHIFY + "/subirImagen/"+idReporte);
+        try {
+            URL url = new URL(URL_WS_CRASHIFY + "evidencias/subirImagen/" + idReporte);
             conn = (HttpURLConnection) url.openConnection();
             conn.setDoInput(true);
             conn.setDoOutput(true);
@@ -556,62 +557,63 @@ public class HttpUtils {
 
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Connection", "Keep-Alive");
-            conn.setRequestProperty("User-Agent","Android MultiPart HTTP Client 1.0");
-            conn.setRequestProperty("Content-Type","application/octet-stream");
+            conn.setRequestProperty("User-Agent", "Android MultiPart HTTP Client 1.0");
+            conn.setRequestProperty("Content-Type", "application/octet-stream");
             StringBuilder sb = new StringBuilder();
-            for(Bitmap bitmap: imagenes) {
-                outputStream = new DataOutputStream(conn.getOutputStream());
+            outputStream = new DataOutputStream(conn.getOutputStream());
 
-                ByteArrayOutputStream bitMapOutputStream =
-                        new ByteArrayOutputStream();
-                bitmap.compress(
-                        Bitmap.CompressFormat.JPEG,
-                        75,
-                        bitMapOutputStream
-                );
-                byte original[] = bitMapOutputStream.toByteArray();
+            ByteArrayOutputStream bitMapOutputStream =
+                    new ByteArrayOutputStream();
+            bitmap.compress(
+                    Bitmap.CompressFormat.JPEG,
+                    75,
+                    bitMapOutputStream
+            );
+            byte original[] = bitMapOutputStream.toByteArray();
 
-                int blockBytes, totalBytes, bufferSize;
-                byte[] buffer;
-                int maxBufferSize = 1 * 1024 * 1024;
-                int lastByte = 0;
-                totalBytes = original.length;
+            int blockBytes, totalBytes, bufferSize;
+            byte[] buffer;
+            int maxBufferSize = 1 * 1024 * 1024;
+            int lastByte = 0;
+            totalBytes = original.length;
+            bufferSize = Math.min(totalBytes, maxBufferSize);
+            buffer = Arrays.copyOfRange(original, lastByte, bufferSize);
+            blockBytes = buffer.length;
+            while (totalBytes > 0) {
+                outputStream.write(buffer, 0, bufferSize);
+                totalBytes -= blockBytes;
+                lastByte += blockBytes;
                 bufferSize = Math.min(totalBytes, maxBufferSize);
-                buffer = Arrays.copyOfRange(original, lastByte, bufferSize);
+                buffer = Arrays.copyOfRange(original, lastByte, lastByte + bufferSize);
                 blockBytes = buffer.length;
-                while (totalBytes > 0) {
-                    outputStream.write(buffer, 0, bufferSize);
-                    totalBytes -= blockBytes;
-                    lastByte += blockBytes;
-                    bufferSize = Math.min(totalBytes, maxBufferSize);
-                    buffer = Arrays.copyOfRange(original, lastByte, lastByte + bufferSize);
-                    blockBytes = buffer.length;
-                }
-                bitMapOutputStream.close();
-                outputStream.flush();
-                Integer status = conn.getResponseCode();
-                if (status == 200 || status == 201) {
-                    if (conn.getInputStream() != null) {
-                        BufferedReader br = new BufferedReader(
-                                new InputStreamReader(
-                                        conn.getInputStream()
-                                )
-                        );
-                        String line;
-                        while ((line = br.readLine()) != null) {
-                            sb.append(line + "\n");
-                        }
-                        br.close();
-
+            }
+            bitMapOutputStream.close();
+            outputStream.flush();
+            Integer status = conn.getResponseCode();
+            if (status == 200 || status == 201) {
+                if (conn.getInputStream() != null) {
+                    BufferedReader br = new BufferedReader(
+                            new InputStreamReader(
+                                    conn.getInputStream()
+                            )
+                    );
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        sb.append(line + "\n");
                     }
+                    br.close();
+
                 }
             }
+            Log.v("Estatus fotos: ", status.toString());
+            Log.v("Estatus fotos: ", conn.getResponseMessage());
+
             res = sb.toString();
-        }catch(MalformedURLException ex){
+        } catch (MalformedURLException ex) {
             ex.printStackTrace();
-        }catch(IOException ex){
+        } catch (IOException ex) {
             ex.printStackTrace();
-        }finally{
+        } finally {
             if (conn != null) {
 
                 conn.disconnect();
@@ -620,11 +622,11 @@ public class HttpUtils {
         return res;
     }
 
-    public static String getEvidencias(String idReporte){
+    public static String getEvidencias(String idReporte) {
         HttpURLConnection conn = null;
         String res = null;
 
-        try{
+        try {
             URL url = new URL(URL_WS_CRASHIFY + "/evidencias/getEvidencias");
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
@@ -632,7 +634,7 @@ public class HttpUtils {
             conn.setConnectTimeout(CONNECT_TIMEOUT);
 
             DataOutputStream wr = new DataOutputStream(
-              conn.getOutputStream()
+                    conn.getOutputStream()
             );
             String urlParameters = String.format("idReporte=%s", idReporte);
             wr.writeBytes(urlParameters);
@@ -650,12 +652,12 @@ public class HttpUtils {
                 br.close();
                 res = sb.toString();
             }
-        }catch(MalformedURLException ex){
+        } catch (MalformedURLException ex) {
             ex.printStackTrace();
-        }catch(IOException ex){
+        } catch (IOException ex) {
             ex.printStackTrace();
-        }finally{
-            if(conn!=null){
+        } finally {
+            if (conn != null) {
                 conn.disconnect();
             }
         }
@@ -678,7 +680,7 @@ public class HttpUtils {
             DataOutputStream wr = new DataOutputStream(
                     c.getOutputStream());
             String urlParameters = String.format("descripcion=%s&idConductor=%s&latitud=%s&longitud=%s&" +
-                    "placasVehiculos=%s",
+                            "placasVehiculos=%s",
                     descripcion, idConductor, latitud, longitud, placasVehiculos);
             wr.writeBytes(urlParameters);
             wr.flush();
@@ -709,11 +711,11 @@ public class HttpUtils {
         return res;
     }
 
-    public static String eliminarVehiculo(String numPlacas){
+    public static String eliminarVehiculo(String numPlacas) {
         HttpURLConnection conn = null;
         String res = null;
 
-        try{
+        try {
             URL url = new URL(URL_WS_CRASHIFY + "/vehiculos/eliminarVehiculo");
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("DELETE");
@@ -739,19 +741,19 @@ public class HttpUtils {
                 br.close();
                 res = sb.toString();
             }
-        }catch(MalformedURLException ex){
+        } catch (MalformedURLException ex) {
             ex.printStackTrace();
-        }catch(IOException ex){
+        } catch (IOException ex) {
             ex.printStackTrace();
-        }finally{
-            if(conn!=null){
+        } finally {
+            if (conn != null) {
                 conn.disconnect();
             }
         }
-        return  res;
+        return res;
     }
 
-    public static String obtenerDetallesReporte(String idReporte){
+    public static String obtenerDetallesReporte(String idReporte) {
         HttpURLConnection c = null;
         String res = null;
         try {

@@ -62,6 +62,9 @@ public class AgregarReporteActivity extends AppCompatActivity {
     LocationManager locManager;
     private ProgressDialog pd_wait;
 
+
+    private String idReporteGen;
+    private Integer imagenesEnviadas;
     private Double latitud;
     private Double longitud;
     private List<Bitmap> fotosArray = new ArrayList<Bitmap>();
@@ -82,9 +85,11 @@ public class AgregarReporteActivity extends AppCompatActivity {
             updateWithNewLocation(null);
         }
 
-        public void onProviderEnabled(String provider) {}
+        public void onProviderEnabled(String provider) {
+        }
 
-        public void onStatusChanged(String provider,int status,Bundle extras){}
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
     };
 
     @Override
@@ -92,11 +97,11 @@ public class AgregarReporteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_agregar_reporte);
 
-        this.txt_descripcion = (EditText)findViewById(R.id.txt_reporteDescripcion);
-        this.txt_involucrados = (EditText)findViewById(R.id.txt_reporteInvolucrados);
-        this.linearLayout1 = (LinearLayout)findViewById(R.id.linearLayout1);
-        this.btn_locate = (Button)findViewById(R.id.btn_locate);
-        this.btn_evidencia = (Button)findViewById(R.id.btn_evidencia);
+        this.txt_descripcion = (EditText) findViewById(R.id.txt_reporteDescripcion);
+        this.txt_involucrados = (EditText) findViewById(R.id.txt_reporteInvolucrados);
+        this.linearLayout1 = (LinearLayout) findViewById(R.id.linearLayout1);
+        this.btn_locate = (Button) findViewById(R.id.btn_locate);
+        this.btn_evidencia = (Button) findViewById(R.id.btn_evidencia);
         this.btn_locate.setEnabled(false);
 
         Intent intent = getIntent();
@@ -132,84 +137,106 @@ public class AgregarReporteActivity extends AppCompatActivity {
             this.latitud = location.getLatitude();
             this.longitud = location.getLongitude();
             latLongString = "Lat:" + latitud + "\nLong:" + longitud;
+            Log.v("Cambio de posicion", latLongString);
         } else {
             latLongString = "No location found";
-            Log.v("ha pasado algo raro","pendejo");
+            Log.v("ha pasado algo raro", "pendejo");
         }
     }
 
     private boolean validar() {
-        return !txt_involucrados.getText().toString().isEmpty() && !txt_descripcion.getText().toString().isEmpty();
+        if (txt_involucrados.getText().toString().isEmpty() && txt_descripcion.getText().toString().isEmpty()) {
+            return false;
+        }
+        Log.v("Mensaje pendejo:", "paso 1");
+        if (fotosArray.isEmpty() || this.fotosArray.size() < 4) {
+            return false;
+        }
+        Log.v("Mensaje pendejo:", "paso 2");
+        return true;
     }
 
     public void clickLocation(View view) {
-        try{
+        try {
+            this.imagenesEnviadas = 0;
+            Log.v("Comienza", "");
             if (validar()) {
                 String descripcion = txt_descripcion.getText().toString();
                 String involucrados = txt_involucrados.getText().toString();
-                Log.v("involucrados:",involucrados);
+                Log.v("involucrados:", involucrados);
                 WSPOSTReporteTask task = new WSPOSTReporteTask();
 
                 task.execute(descripcion, idUsuario.toString(), Double.toString(latitud), Double.toString(longitud), involucrados);
             } else {
                 Toast.makeText(this, getString(R.string.acceso_invalido), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Your Current Position is:\n" + "Lat:" + latitud + "\nLong:" + longitud, Toast.LENGTH_SHORT).show();
             }
-            Toast.makeText(this, "Your Current Position is:\n" + "Lat:" + latitud + "\nLong:" + longitud, Toast.LENGTH_SHORT).show();
 
-        }catch(Exception ex){
+
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
     public void reporteGuardado() {
-        System.out.println("Holis: " + json);
         hideProgressDialog();
-        if (json != null) {
-            try{
-                Log.v("Objeto recibido",""+ json);
-                Respuesta res = new Gson().fromJson(json, Respuesta.class);
-                if (res.isError()) {
-                    Log.v("Error en WS", "Error: " + res.getMensaje());
-                    Toast.makeText(this, res.getMensaje(), Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Reporte Guardado", Toast.LENGTH_SHORT).show();
+        if (this.imagenesEnviadas == fotosArray.size()) {
+            if (json != null) {
+                try {
+                    Log.v("Objeto recibido", "" + json);
+                    Respuesta res = new Gson().fromJson(json, Respuesta.class);
+                    if (res.isError()) {
+                        Log.v("Error en WS", "Error: " + res.getMensaje());
+                        Toast.makeText(this, res.getMensaje(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, "Reporte Guardado", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
-            }catch(Exception ex){
-                ex.printStackTrace();
+            } else {
+                Toast.makeText(this, "Error de conexión", Toast.LENGTH_SHORT).show();
             }
-        } else {
-            Toast.makeText(this, "Error de conexión", Toast.LENGTH_SHORT).show();
+        }else{
+            imagenesEnviadas++;
+            WSPOSTEvidenciasTask task = new WSPOSTEvidenciasTask();
+            task.execute(idReporteGen, fotosArray.get(imagenesEnviadas-1));
+
         }
+
     }
 
-    private void subirImagenes(){
+    private void subirImagenes() {
         String idReporte = null;
-        try{
+        try {
             RespuestaReporte respuestaReporte = new Gson().fromJson(json, RespuestaReporte.class);
-            if(respuestaReporte.isError()){
-                Toast.makeText(this, ""+respuestaReporte.getErrorcode().toString()+
+            if (respuestaReporte.isError()) {
+                Toast.makeText(this, "" + respuestaReporte.getErrorcode().toString() +
                         respuestaReporte.getMensaje(), Toast.LENGTH_SHORT).show();
                 return;
-            }else{
-                try{
+            } else {
+                try {
                     Reporte reporteAux = new Reporte();
                     JSONObject object = new JSONObject(json);
-                    if (object.has("idReporte")){
+                    if (object.has("idReporte")) {
                         idReporte = object.get("idReporte").toString();
-                    }else{
+                        idReporteGen = idReporte;
+                    } else {
                         Toast.makeText(this, "Error de la base de datos", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                }catch(Exception ex){
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             }
-        }catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
-        if(idReporte!=null){
+        if (idReporte != null) {
+            imagenesEnviadas++;
+            Log.v("Reporte: ", idReporte);
             WSPOSTEvidenciasTask task = new WSPOSTEvidenciasTask();
-            task.execute(idReporte, fotosArray);
+            task.execute(idReporte, fotosArray.get(0));
         }
 
     }
@@ -246,7 +273,7 @@ public class AgregarReporteActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(Object... params) {
-            return HttpUtils.subirEvidencia((String)params[0], (List<Bitmap>)params[1]);
+            return HttpUtils.subirEvidencia((String) params[0], (Bitmap) params[1]);
         }
 
         @Override
@@ -281,7 +308,7 @@ public class AgregarReporteActivity extends AppCompatActivity {
                 linearLayout1.addView(image);
                 this.fotosArray.add(((BitmapDrawable) image.getDrawable()).getBitmap());
                 this.btn_locate.setEnabled(true);
-                if( this.fotosArray.size() > 4) {
+                if (this.fotosArray.size() > 4) {
                     this.btn_locate.setEnabled(true);
                 }
                 if (fotosArray.size() > 7) {
@@ -290,6 +317,7 @@ public class AgregarReporteActivity extends AppCompatActivity {
             }
         }
     }
+
     public void takePicture(View v) {
         this.btn_locate.setEnabled(false);
         Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -301,7 +329,7 @@ public class AgregarReporteActivity extends AppCompatActivity {
         }
         if (temp != null) {
             this.photoURI = FileProvider.getUriForFile(this,
-                        getApplicationContext().getPackageName(), temp);
+                    getApplicationContext().getPackageName(), temp);
             i.putExtra(MediaStore.EXTRA_OUTPUT, this.photoURI);
             startActivityForResult(i, REQUEST_CAPTURE);
         }

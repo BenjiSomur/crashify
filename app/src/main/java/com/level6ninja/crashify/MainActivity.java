@@ -253,7 +253,8 @@ public class MainActivity extends AppCompatActivity
         ReporteDictamen rd = new Gson().fromJson(json, ReporteDictamen.class);
         System.out.println("funcionó"+rd.getDictamen());
         Intent intent = new Intent(this,DetalleActivity.class);
-        intent.putExtra("idReporte", rd.getIdReporte());
+        String reporteJson = new Gson().toJson(rd);
+        intent.putExtra("Reporte", reporteJson);
         startActivity(intent);
     }
 }
