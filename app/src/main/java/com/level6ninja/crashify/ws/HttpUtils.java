@@ -708,4 +708,47 @@ public class HttpUtils {
         }
         return res;
     }
+
+    public static String eliminarVehiculo(String numPlacas){
+        HttpURLConnection conn = null;
+        String res = null;
+
+        try{
+            URL url = new URL(URL_WS_CRASHIFY + "/vehiculos/eliminarVehiculo");
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setReadTimeout(READ_TIMEOUT);
+            conn.setConnectTimeout(CONNECT_TIMEOUT);
+
+            DataOutputStream wr = new DataOutputStream(
+                    conn.getOutputStream()
+            );
+            String urlParameters = String.format("numPlacas=%s", numPlacas);
+            wr.writeBytes(urlParameters);
+            wr.flush();
+            wr.close();
+
+            Integer status = conn.getResponseCode();
+            if (status == 200 || status == 201) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = br.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+                br.close();
+                res = sb.toString();
+            }
+        }catch(MalformedURLException ex){
+            ex.printStackTrace();
+        }catch(IOException ex){
+            ex.printStackTrace();
+        }finally{
+            if(conn!=null){
+                conn.disconnect();
+            }
+        }
+        return  res;
+    }
+
 }
